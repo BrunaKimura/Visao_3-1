@@ -34,8 +34,13 @@ def encontra_imagens(imgbusca, descritores = descritores, vocab = vocab, hist_ba
     print("Imagem buscada")
     imgb = cv2.imread(imgbusca)
     new_imgb = cv2.cvtColor(imgb, cv2.COLOR_BGR2RGB)
+    plt.figure(figsize=(20, 10))
+    
+   
+    plt.subplot(3,3,2).axis('off')
+    plt.title("imagem buscada")
     plt.imshow(new_imgb)
-    plt.show()
+
      
     
     chi_list = []
@@ -61,13 +66,16 @@ def encontra_imagens(imgbusca, descritores = descritores, vocab = vocab, hist_ba
 
     ordenada = sorted(chi_list)
 
-    print("Imagens semelhantes")
     for e in range(5):
         index = ordenada[e][1]
+        print("{0}° imagem semelhante: ".format(e+1), descritores[index][0:][0])
         img = cv2.imread(descritores[index][0:][0])
         new_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+        plt.subplot(3,3,e+4).axis('off')
+        plt.title("{0}° imagem semelhante: ".format(e+1))
         plt.imshow(new_img)
-        plt.show()
+    plt.show()
 
 
 
