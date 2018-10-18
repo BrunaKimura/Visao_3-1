@@ -29,7 +29,7 @@ def representa_histograma(img, vocab):
     plt.bar(range(vocab.n_clusters), posicao,  color="blue")
     plt.show()
 
-def encontra_imagens(imgbusca, descritores = descritores, vocab = vocab, hist_banco_i = hist_banco_i, modo=modo):
+def encontra_imagens(imgbusca, descritores = descritores, vocab = vocab, hist_banco_i = hist_banco_i):
     hist_busca = contagem(imgbusca, vocab)
     print("Imagem buscada")
     imgb = cv2.imread(imgbusca)
@@ -39,15 +39,25 @@ def encontra_imagens(imgbusca, descritores = descritores, vocab = vocab, hist_ba
      
     
     chi_list = []
-    for i in range(len(descritores)):
-        hist_banco= hist_banco_i[i] 
+    if modo==1:
+        for i in range(len(descritores)):
+            hist_banco= hist_banco_i[i] 
 
-        n=vocab.n_clusters
-        chi_square = 0
-        for e in range(n):
-            chi_square += ((hist_busca[e] - hist_banco[e])**2)/hist_banco[e]
+            n=vocab.n_clusters
+            chi_square = 0
+            for e in range(n):
+                chi_square += ((hist_busca[e] - hist_banco[e])**2)/hist_banco[e]
 
-        chi_list.append([chi_square, i])
+            chi_list.append([chi_square, i])
+    
+    else:
+        hist1 = cv2.calcHist([imgb],[0],None,[256],[0,256])
+
+        for i in range(len(descritores)):
+            img_banco = cv2.imread(descritores[i][0:][0])
+            hist2 = cv2.calcHist([img_banco],[0],None,[256],[0,256])
+            chi_square = cv2.compareHist( hist1, hist2, cv2.HISTCMP_BHATTACHARYYA)
+            chi_list.append([chi_square, i])
 
     ordenada = sorted(chi_list)
 
@@ -62,7 +72,17 @@ def encontra_imagens(imgbusca, descritores = descritores, vocab = vocab, hist_ba
 
 
 # representa_histograma("101_ObjectCategories/Faces/image_0020.jpg", vocab)
-
+a = True
 img = input("Nome da imagem + caminho: ")
-modo = input("1:Chi-square, 2:OpenCV: ")
+modo = int(input("Qual modo deseja fazer o cálculo? (1:Chi-square, 2:OpenCV): "))
+if (modo == 1) or (modo == 2):
+    a = False
+
+while a:
+    if (modo == 1) or (modo == 2):
+        a = False
+    else:
+        print("digite apenas '1' ou '2'")
+        modo = int(input("Qual modo deseja fazer o cálculo? (1:Chi-square, 2:OpenCV): "))
+
 encontra_imagens(img)
